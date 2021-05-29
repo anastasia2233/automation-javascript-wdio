@@ -1,54 +1,58 @@
-import {username, password} from '../fixtures.js'
+describe('Voucher Registration Page', () => {
 
-describe('Login And Applications Page', () => {
+    it('should create voucher - excercise 3', () => {
 
-    it('should login and list applications - excercise 3', () => {
+        browser.url('/voucher');
 
-        browser.reloadSession();
+        // Zjisti, jestli jsou pole Jméno a Příjmení vidět a jsou editovatelné 
+        const firstNameField = $('#firstName');
+        expect(firstNameField).toBeDisplayed();
+        expect(firstNameField).toBeEnabled();
 
-        browser.url('/prihlaseni');
+        const lastNameField = $('#lastName');
+        expect(lastNameField).toBeDisplayed();
+        expect(lastNameField).toBeEnabled();
 
-        // zjištění stavu políčka email
+        // Zjisti, jaká je dafultní hodnota pole Délka předplatného
+        const subscriptionLengthField = $('#months');
+        expect(subscriptionLengthField).toHaveAttribute('value', 3);
+
+        // Zjisti, jestli je Datum narození required
+        const birthDateField = $('#date');
+        expect(birthDateField).toHaveAttribute('required');
+
+        // Zjisti atribt type pole E-mail
         const emailField = $('#email');
-        expect(emailField).toBeDisplayed();
-        expect(emailField).toBeEnabled();
+        expect(emailField).toHaveAttribute('type', 'email');
+
+        // Zjisti text tlačítka
+        const submitButton = $('.voucher-btn-primary');
+        expect(submitButton).toHaveText('Vygenerovat kód');
+
+        // Vyplň formulář
+        firstNameField.setValue('Anička');
+        lastNameField.setValue('Testerka');
+        subscriptionLengthField.setValue(6);
+        birthDateField.setValue('26.4.2000');
+        emailField.setValue('anicka.testerka@czechitas.cz');
+        submitButton.click();
+
+        // Zjisti cenu a kód
+        const voucherCard = $('#voucher');
+        expect(voucherCard.$('h3')).toHaveText('850 Kč');
+        expect(voucherCard.$('h2')).toHaveText('QWFUYTIwMDAwNDI2NmFhY3');
+
+        // Zjisti zda se objevila tlačítka Aktivovat a Zahodit a jaký mají text
+        const activateButton = voucherCard.$('.voucher-btn-primary');
+        expect(activateButton).toBeDisplayed();
+        expect(activateButton).toHaveText('Aktivovat');
         
-        // zjištění stavu políčka password
-        const passwordField = $('#password');
-        expect(passwordField).toBeDisplayed();
-        expect(passwordField).toBeEnabled();
-        
-        // výpis textu tlačítka na přihlášení
-        const loginButton = $('.btn-primary');
-        expect(loginButton.getText()).toEqual('Přihlásit');
-        // nebo
-        // expect(loginButton).toHaveTextContaining('Přihlásit')
+        const cancelButton = voucherCard.$('.voucher-btn-secondary');
+        expect(cancelButton).toBeDisplayed();
+        expect(cancelButton).toHaveText('Zahodit');
 
-        // přihlášení
-        emailField.setValue(username);
-        passwordField.setValue(password);
-        loginButton.click();
-
-        // výpis přihlášených kurzů
-        const rows = $('.dataTable').$('tbody').$$('tr')
-        expect(rows).toBeElementsArrayOfSize(4);
-        rows.forEach(row => {
-            const cols = row.$$('td');
-            expect(cols[0].getText()).toMatch(/[a-zA-Z]{3,}/);
-            expect(cols[1].getText()).toMatch(/(Python|JavaScript|Automatizované testování)/);
-            expect(cols[2].getText()).toMatch(/(\d{2}.\d{2}.\d{4}|\d{2}.\d{2}. - \d{2}.\d{2}.\d{4})/);
-            expect(cols[3].getText()).toMatch(/\d{1,3}(| \d{0,3}) Kč/);
-        });
-
-        // Bonus - filtrování tabulky
-        const searchText = 'Novák';
-        $('input[type="search"]').setValue(searchText);
-        const filteredRows = $('.dataTable').$('tbody').$$('tr');
-        console.log('There are ' + filteredRows.length + ' filtered rows in the table');
-        filteredRows.forEach(row => {
-            const cols = row.$$('td');
-            expect(cols[0]).toHaveTextContaining(searchText);
-        });
+        // Nakonec udělej screenshot
+        browser.saveScreenshot('voucher_page_filled_' + browser.capabilities.browserName + '.png');
 
     });
     

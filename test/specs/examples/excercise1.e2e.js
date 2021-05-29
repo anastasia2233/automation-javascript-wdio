@@ -1,21 +1,19 @@
 
-describe('Czechitas Login Page', () => {
+describe('Voucher Registration Page', () => {
 
-    it('should open login - excercise 1', () => {
+    it('should open voucher page - excercise 1', () => {
         
-        browser.reloadSession();
-        
-        browser.url('/prihlaseni');
+        browser.url('/voucher');
         
         const windowSize = browser.getWindowSize();
         console.log(windowSize);
 
         const allCookies = browser.getCookies();
         console.log(allCookies);
-        browser.saveScreenshot('login_page.png');
+
+        browser.saveScreenshot('voucher_page_' + browser.capabilities.browserName + '.png');
 
         browser.pause(5000);
-        
     });
     
 });
